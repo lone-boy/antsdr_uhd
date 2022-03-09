@@ -20,13 +20,14 @@ u8 let_fifo_in(fifo *f,u8 *data_in,int length){
 	else if(24 == length){
 		memcpy(f->d.data_24[f->rear],data_in,length);
 	}
-	else if(1464 == length){
+	else if(1464 == length || 1472 == length){
 		memcpy(f->d.data_1472[f->rear],data_in,length);
 	}
 	else{
 		xil_printf("fifo in failed,checkout the data size!\r\n");
 		return 0;
 	}
+	f->length[f->rear] = length;
 	f->rear = (f->rear + 1) % MAX_DEEP;
 	return 1;
 }

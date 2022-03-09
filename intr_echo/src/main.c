@@ -223,7 +223,7 @@ int main()
 		/* fifo from uhd should send to fpga */
 		if(get_fifo_num(&ctrl_recv_fifo) > 0){
 			//change the net_to_host metadata
-			swap_ntohl(ctrl_recv_fifo.d.data_16[ctrl_recv_fifo.front],send_to_fpga,16);
+			swap_ntohl(ctrl_recv_fifo.d.data_16[ctrl_recv_fifo.front],send_to_fpga,ctrl_recv_fifo.length[ctrl_recv_fifo.front]);
 			//send the data to fpga
 			Xil_DCacheFlushRange((UINTPTR)send_to_fpga,16);
 			let_fifo_out(&ctrl_recv_fifo);
@@ -235,7 +235,7 @@ int main()
 		if(get_fifo_num(&ctrl_send_fifo) > 0){
 			psnd = pbuf_alloc(PBUF_TRANSPORT,24,PBUF_ROM);
 //			send_to_uhd = ctrl_send_fifo.d.data_24[ctrl_send_fifo.front];
-			swap_ntohl(recv_from_fpga,ctrl_send_fifo.d.data_24[ctrl_send_fifo.front],24);
+			swap_ntohl(recv_from_fpga,ctrl_send_fifo.d.data_24[ctrl_send_fifo.front],ctrl_send_fifo.length[ctrl_send_fifo.front]);
 			psnd->payload = (void *)ctrl_send_fifo.d.data_24[ctrl_send_fifo.front];
 			let_fifo_out(&ctrl_send_fifo);
 			udp_sendto(&send_pcb, psnd, &RemoteAddr, RemotePort);
@@ -244,12 +244,12 @@ int main()
 			usleep(100);
 		}
 		if(get_fifo_num(&data_recv_fifo) > 0){
-			swap_ntohl(data_recv_fifo.d.data_1472[data_recv_fifo.front],send_to_fpga_metadata,1464);
+			swap_ntohl(data_recv_fifo.d.data_1472[data_recv_fifo.front],send_to_fpga_metadata,data_recv_fifo.length[data_recv_fifo.front]);
 						//send the data to fpga
-			Xil_DCacheFlushRange((UINTPTR)send_to_fpga_metadata,1464);
+			Xil_DCacheFlushRange((UINTPTR)send_to_fpga_metadata,data_recv_fifo.length[data_recv_fifo.front]);
 			let_fifo_out(&data_recv_fifo);
-			tx_iq_transfer(TX_META_BUFFER_BASE,1464);
-			usleep(100);
+			tx_iq_transfer(TX_META_BUFFER_BASE,data_recv_fifo.length[data_recv_fifo.front]);
+			usleep(300);
 		}
 
 	}

@@ -189,9 +189,9 @@ void recv_meta_data_callback(void *arg, struct udp_pcb *upcb,
 
 	send_data_pcb = *upcb;
 
-	if(p->len == 1464){
+	if(p->len == 1464 || p->len == 1472){
 		//recv_from_uhd_metadata = (u8 *)p->payload;
-		let_fifo_in(&data_recv_fifo,(u8 *)p->payload,1464);
+		let_fifo_in(&data_recv_fifo,(u8 *)p->payload,p->len);
 	}
 
 	pbuf_free(p);

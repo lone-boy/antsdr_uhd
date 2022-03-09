@@ -15,7 +15,8 @@
 #define CTR_RECV_SIZE 16
 #define CTR_SEND_SIZE 24
 
-#define DATA_SIZE 1464
+//408
+#define DATA_SIZE 1472
 
 typedef struct{
 	union data{
@@ -24,6 +25,7 @@ typedef struct{
 		 u8 data_1472[MAX_DEEP][DATA_SIZE];
 	}d;
 
+	volatile u32 length[MAX_DEEP];
 	volatile u32 front;
 	volatile u32 rear;
 }fifo;
